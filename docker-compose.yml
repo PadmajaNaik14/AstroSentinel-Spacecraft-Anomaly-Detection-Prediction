@@ -1,0 +1,44 @@
+services:
+  # One-shot training pipeline. NOT part of the default `up` -- run it
+  # explicitly first: `docker compose --profile train run --rm trainer`
+  # (or `make train`). Writes model artifacts to ./ml/artifacts, which the
+  # backend then mounts read-only.
+  trainer:
+    build:
+      context: .
+      dockerfile: docker/trainer.Dockerfile
+    volumes:
+      - ./data/raw:/app/data/raw:ro
+      - ./ml/artifacts:/app/ml/artifacts
+    environment:
+      ASTROSENTINEL_DATA_RAW_DIR: /app/data/raw
+      ASTROSENTINEL_ARTIFACTS_DIR: /app/ml/artifacts
+    profiles: ["train"]
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    volumes:
+      - ./data/raw:/app/data/raw:ro
+      - ./ml/artifacts:/app/ml/artifacts:ro
+      - astrosentinel_db:/app/db
+    environment:
+      ASTROSENTINEL_DATA_RAW_DIR: /app/data/raw
+      ASTROSENTINEL_ARTIFACTS_DIR: /app/ml/artifacts
+      DB_URL: sqlite:////app/db/astrosentinel.db
+      REPLAY_TICK_MS: "150"
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  astrosentinel_db:
