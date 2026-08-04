@@ -18,7 +18,7 @@ export function ShapAttributionPanel({ explain }: { explain: ExplainResponse | u
   if (!explain) {
     return (
       <p style={{ color: "var(--text-secondary)" }}>
-        Waiting for an anomalous point to explain...
+        Click any point on the chart above to explain it, or wait for a live anomaly.
       </p>
     );
   }

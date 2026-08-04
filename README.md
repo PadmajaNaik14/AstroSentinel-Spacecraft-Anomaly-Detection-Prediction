@@ -4,6 +4,19 @@ Spacecraft telemetry anomaly detection & failure prediction, built on NASA's
 SMAP/MSL benchmark dataset. See [plan.md](plan.md) for the full design,
 scope, and rationale.
 
+## Architecture
+
+![AstroSentinel system architecture](docs/architecture.svg)
+
+Telemetry is windowed and normalized, then run through two parallel modules:
+**detection** (an LSTM Autoencoder's reconstruction error, cross-checked by an
+Isolation Forest on rolling error statistics, combined into one ensemble score
+and health state) and **prediction** (a GRU forecaster projects the next 15
+steps, which are re-scored through the same trained autoencoder to estimate a
+predicted time-to-anomaly). An explainability layer attaches SHAP feature
+attribution plus a reconstruction-error heatmap to any detected anomaly.
+Everything is served over REST + WebSocket to a live React dashboard.
+
 - **`ml/`** — data pipeline, LSTM Autoencoder + Isolation Forest (detection),
   GRU forecaster (failure prediction), SHAP explainability, training/eval.
 - **`backend/`** — FastAPI REST + WebSocket API serving live inference over a
@@ -68,6 +81,7 @@ cd frontend && npm install && npm run dev
 ```
 AstroSentinel/
 ├── plan.md                 Full design doc: scope, architecture, open questions
+├── docs/                     architecture.svg
 ├── scripts/                 download_dataset.py, stage_data.py
 ├── data/                     [gitignored] staged dataset
 ├── ml/                        data pipeline, models, training, evaluation

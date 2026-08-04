@@ -4,9 +4,11 @@ import { useParams } from "react-router-dom";
 import { api } from "../api/client";
 import { AnomalyScoreGauge } from "../components/AnomalyScoreGauge";
 import { ForecastPanel } from "../components/ForecastPanel";
+import { PointDetailPanel } from "../components/PointDetailPanel";
 import { ShapAttributionPanel } from "../components/ShapAttributionPanel";
 import { TelemetryChart } from "../components/TelemetryChart";
 import { useChannelStream } from "../hooks/useChannelStream";
+import type { TelemetryPoint } from "../types";
 
 const card: React.CSSProperties = {
   border: "1px solid var(--border)",
@@ -18,6 +20,7 @@ const card: React.CSSProperties = {
 export function ChannelDetailPage() {
   const { chanId } = useParams<{ chanId: string }>();
   const [paused, setPaused] = useState(false);
+  const [selectedPoint, setSelectedPoint] = useState<TelemetryPoint | null>(null);
 
   const { data: channel } = useQuery({
     queryKey: ["channel", chanId],
@@ -34,10 +37,15 @@ export function ChannelDetailPage() {
   const { points, connected } = useChannelStream(chanId ?? "", paused);
   const latest = points[points.length - 1];
 
+  // Explain whatever the user clicked; fall back to the live latest anomaly
+  // when nothing is pinned, so the SHAP panel is useful even before any click.
+  const explainIndex = selectedPoint?.index ?? (latest?.is_anomaly ? latest.index : undefined);
+  const explainSource = selectedPoint ? "selected point" : "live anomaly";
+
   const { data: explain } = useQuery({
-    queryKey: ["explain", chanId, latest?.index],
-    queryFn: () => api.explain(chanId!, latest!.index),
-    enabled: !!chanId && !!latest && latest.is_anomaly,
+    queryKey: ["explain", chanId, explainIndex],
+    queryFn: () => api.explain(chanId!, explainIndex!),
+    enabled: !!chanId && explainIndex !== undefined,
     staleTime: 5000,
   });
 
@@ -91,7 +99,12 @@ export function ChannelDetailPage() {
             points={points}
             groundTruthWindows={anomalies?.ground_truth ?? []}
             forecast={forecast}
+            selectedIndex={selectedPoint?.index ?? null}
+            onPointClick={setSelectedPoint}
           />
+          <div style={{ borderTop: "1px solid var(--gridline)", marginTop: 14, paddingTop: 14 }}>
+            <PointDetailPanel point={selectedPoint} onClear={() => setSelectedPoint(null)} />
+          </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={card}>
@@ -109,6 +122,11 @@ export function ChannelDetailPage() {
       </div>
 
       <div style={{ ...card, marginTop: 16 }}>
+        {explainIndex !== undefined && (
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
+            Explaining index {explainIndex} ({explainSource})
+          </div>
+        )}
         <ShapAttributionPanel explain={explain} />
       </div>
     </div>

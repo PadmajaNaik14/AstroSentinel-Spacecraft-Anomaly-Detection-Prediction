@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 800" width="1360" height="800" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1360" height="800" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="680" y="34" text-anchor="middle" font-size="22" font-weight="700" fill="#0b0b0b">AstroSentinel: Spacecraft Telemetry Anomaly Detection</text>
+  <text x="680" y="58" text-anchor="middle" font-size="22" font-weight="700" fill="#0b0b0b">&amp; Failure Prediction — System Architecture</text>
+
+  <!-- Row A: Input -> Preprocessing -->
+  <rect x="40" y="100" width="230" height="90" rx="10" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="155" y="136" text-anchor="middle" font-size="15" font-weight="700" fill="#0b0b0b">Telemetry Data Input</text>
+  <text x="155" y="158" text-anchor="middle" font-size="12.5" fill="#3a3a3a">SMAP / MSL test split</text>
+  <text x="155" y="174" text-anchor="middle" font-size="12.5" fill="#3a3a3a">(replayed over WebSocket)</text>
+
+  <line x1="270" y1="145" x2="326" y2="145" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="330" y="100" width="260" height="90" rx="10" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="460" y="130" text-anchor="middle" font-size="15" font-weight="700" fill="#0b0b0b">Preprocessing &amp; Normalization</text>
+  <text x="460" y="152" text-anchor="middle" font-size="12.5" fill="#3a3a3a">100-step sliding window,</text>
+  <text x="460" y="170" text-anchor="middle" font-size="12.5" fill="#3a3a3a">train-split-only scaling</text>
+
+  <line x1="460" y1="190" x2="460" y2="226" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Module 1 container -->
+  <rect x="40" y="230" width="590" height="350" rx="12" fill="#f7f7f5" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="65" y="258" font-size="16" font-weight="700" fill="#0b0b0b">Module 1 — Anomaly Detection</text>
+
+  <rect x="65" y="275" width="540" height="85" rx="8" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="335" y="300" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">LSTM Autoencoder</text>
+  <text x="335" y="320" text-anchor="middle" font-size="12.5" fill="#3a3a3a">Reconstruction error on the value channel,</text>
+  <text x="335" y="337" text-anchor="middle" font-size="12.5" fill="#3a3a3a">EWMA-smoothed, per-channel dynamic threshold</text>
+
+  <rect x="65" y="375" width="540" height="85" rx="8" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="335" y="400" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">Isolation Forest (secondary detector)</text>
+  <text x="335" y="420" text-anchor="middle" font-size="12.5" fill="#3a3a3a">Rolling reconstruction-error statistics</text>
+  <text x="335" y="437" text-anchor="middle" font-size="12.5" fill="#3a3a3a">(mean, std, max, slope, z-score)</text>
+
+  <rect x="65" y="475" width="540" height="85" rx="8" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="335" y="500" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">Ensemble</text>
+  <text x="335" y="520" text-anchor="middle" font-size="12.5" fill="#3a3a3a">OR rule (binary flag) + weighted score</text>
+  <text x="335" y="537" text-anchor="middle" font-size="12.5" fill="#3a3a3a">(0.7 × AE + 0.3 × Isolation Forest)</text>
+
+  <line x1="630" y1="530" x2="676" y2="510" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Detected anomalies / health state -->
+  <rect x="680" y="460" width="250" height="120" rx="10" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="805" y="488" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">Anomaly Score &amp;</text>
+  <text x="805" y="507" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">Health State</text>
+  <text x="805" y="530" text-anchor="middle" font-size="12" fill="#3a3a3a">Stable → Normal → Warning →</text>
+  <text x="805" y="546" text-anchor="middle" font-size="12" fill="#3a3a3a">Critical → Failure Risk</text>
+
+  <line x1="900" y1="465" x2="954" y2="330" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="805" y1="580" x2="870" y2="616" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Module 2 container -->
+  <rect x="760" y="90" width="320" height="300" rx="12" fill="#f7f7f5" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="785" y="118" font-size="16" font-weight="700" fill="#0b0b0b">Module 2 — Failure Prediction</text>
+
+  <rect x="785" y="135" width="270" height="95" rx="8" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="920" y="163" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">GRU Forecaster</text>
+  <text x="920" y="184" text-anchor="middle" font-size="12.5" fill="#3a3a3a">Predicts the next 15 raw</text>
+  <text x="920" y="201" text-anchor="middle" font-size="12.5" fill="#3a3a3a">telemetry steps ahead</text>
+
+  <rect x="785" y="250" width="270" height="115" rx="8" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="920" y="276" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">Forecast → AE Re-scoring</text>
+  <text x="920" y="296" text-anchor="middle" font-size="12.5" fill="#3a3a3a">Forecast run back through the trained</text>
+  <text x="920" y="313" text-anchor="middle" font-size="12.5" fill="#3a3a3a">AE + threshold → predicted</text>
+  <text x="920" y="330" text-anchor="middle" font-size="12.5" fill="#3a3a3a">time-to-anomaly</text>
+
+  <!-- Explainability layer -->
+  <rect x="680" y="620" width="440" height="130" rx="10" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="900" y="650" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0b0b0b">Explainability Layer</text>
+  <text x="900" y="674" text-anchor="middle" font-size="12.5" fill="#3a3a3a">SHAP (TreeExplainer on Isolation Forest features)</text>
+  <text x="900" y="692" text-anchor="middle" font-size="12.5" fill="#3a3a3a">+ reconstruction-error heatmap</text>
+  <text x="900" y="710" text-anchor="middle" font-size="12.5" fill="#3a3a3a">(a separate technique, explicitly not labeled SHAP)</text>
+
+  <!-- Arrows into Visualization -->
+  <line x1="1080" y1="230" x2="1114" y2="230" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1120" y1="685" x2="1114" y2="685" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Visualization interface -->
+  <rect x="1120" y="90" width="200" height="670" rx="12" fill="#f7f7f5" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="1220" y="122" text-anchor="middle" font-size="16" font-weight="700" fill="#0b0b0b">Visualization</text>
+  <text x="1220" y="142" text-anchor="middle" font-size="16" font-weight="700" fill="#0b0b0b">Interface</text>
+  <text x="1220" y="170" text-anchor="middle" font-size="12.5" fill="#3a3a3a">React dashboard</text>
+
+  <rect x="1140" y="190" width="160" height="46" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="217" text-anchor="middle" font-size="12.5" fill="#0b0b0b">Channel Health Grid</text>
+
+  <rect x="1140" y="248" width="160" height="46" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="275" text-anchor="middle" font-size="12.5" fill="#0b0b0b">Live Telemetry Chart</text>
+
+  <rect x="1140" y="306" width="160" height="46" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="333" text-anchor="middle" font-size="12.5" fill="#0b0b0b">Anomaly Score Gauge</text>
+
+  <rect x="1140" y="364" width="160" height="46" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="391" text-anchor="middle" font-size="12.5" fill="#0b0b0b">Forecast Panel</text>
+
+  <rect x="1140" y="422" width="160" height="46" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="449" text-anchor="middle" font-size="12.5" fill="#0b0b0b">SHAP Panel</text>
+
+  <rect x="1140" y="480" width="160" height="46" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="507" text-anchor="middle" font-size="12.5" fill="#0b0b0b">Alerts Log</text>
+
+  <rect x="1140" y="538" width="160" height="60" rx="6" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.2"/>
+  <text x="1220" y="562" text-anchor="middle" font-size="12.5" fill="#0b0b0b">REST + WebSocket</text>
+  <text x="1220" y="580" text-anchor="middle" font-size="12.5" fill="#0b0b0b">(FastAPI backend)</text>
+
+  <text x="1220" y="630" text-anchor="middle" font-size="11.5" fill="#666" font-style="italic">Simulated real-time</text>
+  <text x="1220" y="647" text-anchor="middle" font-size="11.5" fill="#666" font-style="italic">replay of held-out</text>
+  <text x="1220" y="664" text-anchor="middle" font-size="11.5" fill="#666" font-style="italic">labeled test data</text>
+
+  <!-- Legend -->
+  <rect x="40" y="770" width="14" height="14" fill="#f7f7f5" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="60" y="781" font-size="12" fill="#3a3a3a">Module / grouping</text>
+  <rect x="220" y="770" width="14" height="14" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="240" y="781" font-size="12" fill="#3a3a3a">Component</text>
+</svg>
