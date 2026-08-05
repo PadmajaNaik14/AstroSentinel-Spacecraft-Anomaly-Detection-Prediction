@@ -1,3 +1,5 @@
+import { card } from "../styles/ui";
+
 interface Props {
   predictedStepsToAnomaly: number | null;
   horizon: number;
@@ -10,15 +12,8 @@ export function ForecastPanel({ predictedStepsToAnomaly, horizon }: Props) {
   const atRisk = predictedStepsToAnomaly !== null;
 
   return (
-    <div
-      style={{
-        border: "1px solid var(--border)",
-        borderRadius: 10,
-        background: "var(--surface-1)",
-        padding: 16,
-      }}
-    >
-      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Failure Prediction</div>
+    <div style={card}>
+      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>Failure Prediction</div>
       {atRisk ? (
         <div
           style={{

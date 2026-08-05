@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/client";
+import { statusChip } from "../styles/ui";
 
 const SEVERITY_COLOR_VAR: Record<string, string> = {
   warning: "--status-warning",
@@ -28,50 +29,34 @@ export function AlertsTable({ chanId }: { chanId?: string }) {
   }
 
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+    <table className="data-table">
       <thead>
-        <tr style={{ textAlign: "left", color: "var(--text-muted)", fontSize: 11 }}>
-          <th style={{ padding: "6px 8px" }}>Time</th>
-          <th style={{ padding: "6px 8px" }}>Channel</th>
-          <th style={{ padding: "6px 8px" }}>Severity</th>
-          <th style={{ padding: "6px 8px" }}>Message</th>
-          <th style={{ padding: "6px 8px" }} />
+        <tr>
+          <th>Time</th>
+          <th>Channel</th>
+          <th>Severity</th>
+          <th>Message</th>
+          <th />
         </tr>
       </thead>
       <tbody>
         {items.map((a) => (
-          <tr key={a.id} style={{ borderTop: "1px solid var(--gridline)" }}>
-            <td style={{ padding: "6px 8px", color: "var(--text-secondary)" }}>
+          <tr key={a.id}>
+            <td style={{ color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
               {new Date(a.created_at).toLocaleString()}
             </td>
-            <td style={{ padding: "6px 8px", fontWeight: 600 }}>{a.chan_id}</td>
-            <td style={{ padding: "6px 8px" }}>
-              <span
-                style={{
-                  color: `var(${SEVERITY_COLOR_VAR[a.severity] ?? "--text-secondary"})`,
-                  fontWeight: 600,
-                }}
-              >
-                {a.severity}
+            <td style={{ fontWeight: 600 }}>{a.chan_id}</td>
+            <td>
+              <span style={statusChip(SEVERITY_COLOR_VAR[a.severity] ?? "--text-muted")}>
+                {a.severity.replace("_", " ")}
               </span>
             </td>
-            <td style={{ padding: "6px 8px", color: "var(--text-secondary)" }}>{a.message}</td>
-            <td style={{ padding: "6px 8px" }}>
+            <td style={{ color: "var(--text-secondary)" }}>{a.message}</td>
+            <td>
               {a.acknowledged ? (
-                <span style={{ color: "var(--text-muted)" }}>Acknowledged</span>
+                <span style={{ color: "var(--text-muted)", fontSize: 12 }}>Acknowledged</span>
               ) : (
-                <button
-                  onClick={() => ack.mutate(a.id)}
-                  style={{
-                    fontSize: 12,
-                    padding: "4px 10px",
-                    borderRadius: 6,
-                    border: "1px solid var(--border)",
-                    background: "var(--surface-1)",
-                    color: "var(--text-primary)",
-                    cursor: "pointer",
-                  }}
-                >
+                <button className="btn btn-sm" onClick={() => ack.mutate(a.id)}>
                   Acknowledge
                 </button>
               )}

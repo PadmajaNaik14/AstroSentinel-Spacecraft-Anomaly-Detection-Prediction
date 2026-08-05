@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { sectionLabel } from "../styles/ui";
 import type { TelemetryPoint } from "../types";
 import { HealthPill } from "./HealthPill";
 
@@ -10,15 +11,15 @@ interface Props {
 const grid: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
-  gap: 10,
+  gap: 12,
   fontSize: 13,
 };
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={{ color: "var(--text-muted)", fontSize: 11 }}>{label}</div>
-      <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{value}</div>
+      <div style={sectionLabel}>{label}</div>
+      <div style={{ fontWeight: 600, color: "var(--text-primary)", marginTop: 2 }}>{value}</div>
     </div>
   );
 }
@@ -29,7 +30,7 @@ function Field({ label, value }: { label: string; value: string }) {
 export function PointDetailPanel({ point, onClear }: Props) {
   if (!point) {
     return (
-      <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+      <p style={{ color: "var(--text-secondary)", fontSize: 13, margin: 0 }}>
         Click any point on the chart to inspect its full detection detail.
       </p>
     );
@@ -47,19 +48,8 @@ export function PointDetailPanel({ point, onClear }: Props) {
           marginBottom: 10,
         }}
       >
-        <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>index {point.index}</span>
-        <button
-          onClick={onClear}
-          style={{
-            fontSize: 11,
-            padding: "3px 10px",
-            borderRadius: 6,
-            border: "1px solid var(--border)",
-            background: "var(--surface-1)",
-            color: "var(--text-secondary)",
-            cursor: "pointer",
-          }}
-        >
+        <span style={sectionLabel}>Index {point.index}</span>
+        <button className="btn btn-sm btn-ghost" onClick={onClear}>
           Clear
         </button>
       </div>

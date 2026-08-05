@@ -1,5 +1,6 @@
 import { RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 import { HEALTH_META } from "../healthState";
+import { sectionLabel } from "../styles/ui";
 import type { HealthState } from "../types";
 import { HealthPill } from "./HealthPill";
 
@@ -33,9 +34,7 @@ export function AnomalyScoreGauge({ score, healthState }: Props) {
       <div style={{ marginTop: -56, fontSize: 28, fontWeight: 700, color: "var(--text-primary)" }}>
         {score.toFixed(2)}x
       </div>
-      <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
-        of anomaly threshold
-      </div>
+      <div style={{ ...sectionLabel, marginBottom: 10 }}>of anomaly threshold</div>
       <HealthPill state={healthState} />
     </div>
   );

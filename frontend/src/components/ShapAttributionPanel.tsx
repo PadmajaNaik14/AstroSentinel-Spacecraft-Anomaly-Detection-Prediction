@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { sectionLabel } from "../styles/ui";
 import type { ExplainResponse } from "../types";
 
 /** Diverging blue<->red polarity encoding (push-toward-anomaly vs
@@ -31,8 +32,8 @@ export function ShapAttributionPanel({ explain }: { explain: ExplainResponse | u
   return (
     <div>
       <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>SHAP Feature Attribution</div>
-      <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
-        Isolation Forest, engineered rolling-error features
+      <div style={{ ...sectionLabel, marginBottom: 10 }}>
+        Isolation Forest &middot; engineered rolling-error features
       </div>
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16 }}>
@@ -64,10 +65,8 @@ export function ShapAttributionPanel({ explain }: { explain: ExplainResponse | u
         </BarChart>
       </ResponsiveContainer>
 
-      <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, color: "var(--text-secondary)" }}>
-          Reconstruction-error heatmap (not SHAP)
-        </div>
+      <div style={{ marginTop: 16 }}>
+        <div style={{ ...sectionLabel, marginBottom: 6 }}>Reconstruction-error heatmap (not SHAP)</div>
         <div style={{ display: "flex", height: 16, borderRadius: 4, overflow: "hidden" }}>
           {explain.reconstruction_error_heatmap.map((v, i) => (
             <div

@@ -8,14 +8,19 @@ import { PointDetailPanel } from "../components/PointDetailPanel";
 import { ShapAttributionPanel } from "../components/ShapAttributionPanel";
 import { TelemetryChart } from "../components/TelemetryChart";
 import { useChannelStream } from "../hooks/useChannelStream";
+import { card, pageTitle, sectionLabel } from "../styles/ui";
 import type { TelemetryPoint } from "../types";
 
-const card: React.CSSProperties = {
-  border: "1px solid var(--border)",
-  borderRadius: 10,
-  background: "var(--surface-1)",
-  padding: 16,
-};
+function MetaStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div style={sectionLabel}>{label}</div>
+      <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--text-primary)", marginTop: 2 }}>
+        {value}
+      </div>
+    </div>
+  );
+}
 
 export function ChannelDetailPage() {
   const { chanId } = useParams<{ chanId: string }>();
@@ -58,42 +63,57 @@ export function ChannelDetailPage() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <h1 style={{ fontSize: 20, margin: 0 }}>{chanId}</h1>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+          gap: 16,
+        }}
+      >
+        <div>
+          <h1 style={pageTitle}>{chanId}</h1>
+          {channel && (
+            <div style={{ display: "flex", gap: 28, marginTop: 12 }}>
+              <MetaStat label="Spacecraft" value={channel.spacecraft} />
+              <MetaStat label="Anomaly class" value={channel.anomaly_class} />
+              <MetaStat label="Eval F1" value={channel.eval_f1.toFixed(2)} />
+              <MetaStat
+                label="Precision / Recall"
+                value={`${channel.eval_precision.toFixed(2)} / ${channel.eval_recall.toFixed(2)}`}
+              />
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <span
             style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
               fontSize: 12,
+              fontWeight: 600,
               color: connected ? "var(--status-good)" : "var(--text-muted)",
             }}
           >
-            {connected ? "● live" : "○ connecting..."}
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: connected ? "var(--status-good)" : "var(--text-muted)",
+              }}
+            />
+            {connected ? "Live" : "Connecting..."}
           </span>
-          <button
-            onClick={() => setPaused((p) => !p)}
-            style={{
-              fontSize: 12,
-              padding: "4px 12px",
-              borderRadius: 6,
-              border: "1px solid var(--border)",
-              background: "var(--surface-1)",
-              color: "var(--text-primary)",
-              cursor: "pointer",
-            }}
-          >
+          <button className="btn" onClick={() => setPaused((p) => !p)}>
             {paused ? "Resume" : "Pause"}
           </button>
         </div>
       </div>
-      {channel && (
-        <p style={{ color: "var(--text-secondary)", fontSize: 13, marginTop: 4 }}>
-          {channel.spacecraft} &middot; {channel.anomaly_class} &middot; eval F1{" "}
-          {channel.eval_f1.toFixed(2)} (P {channel.eval_precision.toFixed(2)} / R{" "}
-          {channel.eval_recall.toFixed(2)})
-        </p>
-      )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16, marginTop: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16, marginTop: 20 }}>
         <div style={card}>
           <TelemetryChart
             points={points}
@@ -123,8 +143,8 @@ export function ChannelDetailPage() {
 
       <div style={{ ...card, marginTop: 16 }}>
         {explainIndex !== undefined && (
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>
-            Explaining index {explainIndex} ({explainSource})
+          <div style={{ ...sectionLabel, marginBottom: 10 }}>
+            Explaining index {explainIndex} &middot; {explainSource}
           </div>
         )}
         <ShapAttributionPanel explain={explain} />
