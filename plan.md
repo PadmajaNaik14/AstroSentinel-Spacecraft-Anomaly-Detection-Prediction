@@ -12,7 +12,7 @@ The dataset is the NASA SMAP/MSL telemetry anomaly benchmark (the "Telemanom" da
 Confirmed architecture/scope decisions:
 1. **Frontend/backend split**: FastAPI backend + React (Vite+TS) frontend, REST + WebSocket, fully decoupled and containerized (not a Streamlit monolith).
 2. **ML scope**: LSTM Autoencoder (primary anomaly detector) + Isolation Forest (secondary/ensemble) + SHAP explainability + a **GRU-based multi-step forecaster for failure prediction** (a lighter but genuine deep-learning alternative to a full Transformer/TCN stack).
-3. **Channel coverage**: **20 curated channels** (10 SMAP + 10 MSL, mixed point/contextual/mixed anomaly types), verified against the real `labeled_anomalies.csv`. Architecture stays generic so more channels are a config change + retrain, not a redesign.
+3. **Channel coverage**: **10 curated channels** (5 SMAP + 5 MSL, mixed point/contextual/mixed anomaly types), verified against the real `labeled_anomalies.csv`. Reduced from an initial 20 to cut training/serving time. Architecture stays generic so more channels are a config change + retrain, not a redesign.
 
 "Real-time monitoring" is reinterpreted honestly: there is no live spacecraft feed, so the backend **simulates** real-time by replaying each channel's held-out, labeled test split over a WebSocket at an accelerated cadence, running live inference (detection + forecast) as it streams.
 
@@ -41,7 +41,7 @@ All of this is exposed through a live dashboard (React) backed by a real API (Fa
 - **GRU multi-step forecaster** (failure-prediction module): predicts the next `H=15` steps of raw telemetry per channel; forecast is scored through the existing AE+threshold to produce a **predicted-time-to-anomaly**, shown as its own dashboard module (forecast chart + countdown/"no risk in horizon" indicator)
 - **SHAP** (`TreeExplainer` on the Isolation Forest's engineered features) for genuine feature-attribution explanations, plus a clearly-separate reconstruction-error-per-timestep heatmap (labeled as such, not mislabeled as SHAP)
 - Derived health-state classification (Stable/Normal/Warning/Critical/Failure Risk) combining current detection + forecast countdown
-- **20 curated channels** (10 SMAP + 10 MSL, mixed point/contextual/mixed classes — see list below), config-driven and extensible
+- **10 curated channels** (5 SMAP + 5 MSL, mixed point/contextual/mixed classes — see list below), config-driven and extensible
 - FastAPI backend: REST endpoints (channels, telemetry, anomalies, forecast, alerts, explain, health) + WebSocket simulated real-time replay carrying live detection + forecast together, SQLite persistence of anomaly events/alerts
 - React (Vite+TS) frontend: dashboard health grid, channel detail view (live chart + anomaly overlay + score gauge + forecast panel + SHAP panel), alerts log page — Recharts, accessible/theme-aware color system
 - Docker: separate `backend`/`frontend` Dockerfiles, a one-shot `trainer` service/profile producing all model artifacts, wired together with `docker-compose.yml`
@@ -51,17 +51,19 @@ All of this is exposed through a live dashboard (React) backed by a real API (Fa
 - **Live/real spacecraft integration** — no real telemetry source exists; this is a historical-benchmark replay system by design.
 - **SMS/email alerting** — needs third-party provider credentials/cost with no architectural payoff for a local demo; alerts live in the DB + UI only.
 - **Multi-role RBAC (Operator/Analyst/Admin)** — no real multi-user need for a single-demo academic project.
-- **GPU training clusters** — 20 small per-channel models train fine on a CPU in minutes.
+- **GPU training clusters** — 10 small per-channel models train fine on a CPU in minutes.
 - **Deep-space autonomous operation** — this is a monitoring/analysis dashboard, not onboard flight software.
-- **All 82 channels** — a curated, verified 20-channel subset is used for v1; extending coverage is a config change + retrain.
+- **All 82 channels** — a curated, verified 10-channel subset is used for v1; extending coverage is a config change + retrain.
 - **Full Transformer / deep dilated TCN forecaster** — replaced by the lighter GRU-based multi-step forecaster, which delivers the same "predict failures before they happen" capability at a fraction of the cost. A heavier model is a valid future upgrade to the same forecast interface.
 
-### Curated 20-channel list (verified against the real `labeled_anomalies.csv`)
+### Curated 10-channel list (verified against the real `labeled_anomalies.csv`)
 
 | Spacecraft | Channels |
 |---|---|
-| SMAP (10) | S-1 (point), E-2 (point), A-1 (point), D-1 (point), P-1 (contextual), A-2 (contextual), G-1 (contextual), T-1 (point+contextual), P-4 (point), B-1 (point) |
-| MSL (10) | M-6 (point), S-2 (point), T-4 (point), F-4 (point), P-11 (point), M-1 (contextual), F-7 (contextual), T-12 (contextual), D-16 (contextual), C-1 (point+contextual) |
+| SMAP (5) | S-1 (point), D-1 (point), P-1 (contextual), A-2 (contextual), T-1 (point+contextual) |
+| MSL (5) | T-4 (point), P-11 (point), F-7 (contextual), M-1 (contextual), C-1 (point+contextual) |
+
+Reduced from an original 20-channel set (dropped: E-2, A-1, G-1, P-4, B-1, M-6, S-2, F-4, T-12, D-16) purely to cut training/serving time — no change in method, just fewer channels.
 
 Defined in `ml/ml/config.py::CURATED_CHANNELS`.
 

@@ -29,7 +29,7 @@ Everything is served over REST + WebSocket to a live React dashboard.
 ## Quickstart (Docker)
 
 1. **Stage the dataset** (downloads via kagglehub if not already cached, then
-   copies the 20 curated channels into the gitignored `data/raw/`):
+   copies the 10 curated channels into the gitignored `data/raw/`):
 
    ```bash
    python scripts/download_dataset.py
@@ -37,7 +37,7 @@ Everything is served over REST + WebSocket to a live React dashboard.
    # or: make data
    ```
 
-2. **Train all 20 channels** (one-shot container, writes `ml/artifacts/`):
+2. **Train all 10 channels** (one-shot container, writes `ml/artifacts/`):
 
    ```bash
    docker compose --profile train run --rm trainer
@@ -66,7 +66,7 @@ Requires Python 3.11+ and Node 20+.
 # ML / training
 pip install -r ml/requirements.txt
 cd ml && PYTHONPATH=. python -m pytest tests/ -q      # unit tests
-PYTHONPATH=. python -m ml.training.train_all           # from ml/, trains all 20 channels
+PYTHONPATH=. python -m ml.training.train_all           # from ml/, trains all 10 channels
 
 # Backend
 pip install -r backend/requirements.txt

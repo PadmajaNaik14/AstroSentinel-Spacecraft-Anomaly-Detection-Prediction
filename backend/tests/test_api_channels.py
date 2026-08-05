@@ -18,12 +18,12 @@ def test_health_and_channels_endpoints():
     with TestClient(app) as client:
         health = client.get("/api/health")
         assert health.status_code == 200
-        assert health.json()["channels_loaded"] == 20
+        assert health.json()["channels_loaded"] == 10
 
         channels = client.get("/api/channels")
         assert channels.status_code == 200
         data = channels.json()
-        assert len(data) == 20
+        assert len(data) == 10
         assert "S-1" in {c["chan_id"] for c in data}
 
         detail = client.get("/api/channels/S-1")

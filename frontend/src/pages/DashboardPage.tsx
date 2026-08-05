@@ -6,7 +6,7 @@ export function DashboardPage() {
     <div>
       <h1 style={pageTitle}>Spacecraft Health Dashboard</h1>
       <p style={{ ...pageSubtitle, marginBottom: 22 }}>
-        20 curated SMAP/MSL telemetry channels, replayed from held-out labeled test data.
+        10 curated SMAP/MSL telemetry channels, replayed from held-out labeled test data.
       </p>
       <ChannelHealthGrid />
     </div>

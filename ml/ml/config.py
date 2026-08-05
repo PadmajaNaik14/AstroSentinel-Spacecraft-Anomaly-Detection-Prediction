@@ -30,27 +30,18 @@ FORECAST_HORIZON = 15
 NUM_FEATURES = 25  # column 0 = value, columns 1-24 = one-hot context
 
 # Verified against the real labeled_anomalies.csv (see plan.md).
-# 10 SMAP + 10 MSL, mixed point / contextual / mixed anomaly classes.
+# Reduced from 20 to 10 (5 SMAP + 5 MSL) to cut training/serving time --
+# still mixed point / contextual / mixed anomaly classes across both spacecraft.
 CURATED_CHANNELS = [
     {"chan_id": "S-1", "spacecraft": "SMAP", "anomaly_class": "point"},
-    {"chan_id": "E-2", "spacecraft": "SMAP", "anomaly_class": "point"},
-    {"chan_id": "A-1", "spacecraft": "SMAP", "anomaly_class": "point"},
     {"chan_id": "D-1", "spacecraft": "SMAP", "anomaly_class": "point"},
     {"chan_id": "P-1", "spacecraft": "SMAP", "anomaly_class": "contextual"},
     {"chan_id": "A-2", "spacecraft": "SMAP", "anomaly_class": "contextual"},
-    {"chan_id": "G-1", "spacecraft": "SMAP", "anomaly_class": "contextual"},
     {"chan_id": "T-1", "spacecraft": "SMAP", "anomaly_class": "mixed"},
-    {"chan_id": "P-4", "spacecraft": "SMAP", "anomaly_class": "point"},
-    {"chan_id": "B-1", "spacecraft": "SMAP", "anomaly_class": "point"},
-    {"chan_id": "M-6", "spacecraft": "MSL", "anomaly_class": "point"},
-    {"chan_id": "S-2", "spacecraft": "MSL", "anomaly_class": "point"},
     {"chan_id": "T-4", "spacecraft": "MSL", "anomaly_class": "point"},
-    {"chan_id": "F-4", "spacecraft": "MSL", "anomaly_class": "point"},
     {"chan_id": "P-11", "spacecraft": "MSL", "anomaly_class": "point"},
-    {"chan_id": "M-1", "spacecraft": "MSL", "anomaly_class": "contextual"},
     {"chan_id": "F-7", "spacecraft": "MSL", "anomaly_class": "contextual"},
-    {"chan_id": "T-12", "spacecraft": "MSL", "anomaly_class": "contextual"},
-    {"chan_id": "D-16", "spacecraft": "MSL", "anomaly_class": "contextual"},
+    {"chan_id": "M-1", "spacecraft": "MSL", "anomaly_class": "contextual"},
     {"chan_id": "C-1", "spacecraft": "MSL", "anomaly_class": "mixed"},
 ]
 
