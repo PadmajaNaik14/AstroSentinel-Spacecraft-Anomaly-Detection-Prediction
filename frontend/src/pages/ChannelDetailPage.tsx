@@ -42,6 +42,10 @@ export function ChannelDetailPage() {
   const { points, connected } = useChannelStream(chanId ?? "", paused);
   const latest = points[points.length - 1];
 
+  // Whatever the user clicked drives the point-specific panels; fall back to
+  // the live latest point when nothing is pinned.
+  const activePoint = selectedPoint ?? latest;
+
   // Explain whatever the user clicked; fall back to the live latest anomaly
   // when nothing is pinned, so the SHAP panel is useful even before any click.
   const explainIndex = selectedPoint?.index ?? (latest?.is_anomaly ? latest.index : undefined);
@@ -135,8 +139,15 @@ export function ChannelDetailPage() {
             )}
           </div>
           <ForecastPanel
-            predictedStepsToAnomaly={latest?.predicted_steps_to_anomaly ?? null}
+            hasActivePoint={!!activePoint}
+            stillWarmingUp={!!activePoint && activePoint.forecast === null}
+            predictedStepsToAnomaly={activePoint?.predicted_steps_to_anomaly ?? null}
+            forecastValues={activePoint?.forecast ?? null}
+            currentValue={activePoint?.value ?? null}
             horizon={channel?.forecast_horizon ?? 15}
+            anomalyClass={channel?.anomaly_class}
+            sourceIndex={activePoint?.index}
+            isSelected={!!selectedPoint}
           />
         </div>
       </div>
