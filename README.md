@@ -6,7 +6,7 @@ scope, and rationale.
 
 ## Architecture
 
-![AstroSentinel system architecture](docs/architecture.svg)
+![AstroSentinel system architecture](docs/astrosentinel_architecture.png)
 
 Telemetry is windowed and normalized, then run through two parallel modules:
 **detection** (an LSTM Autoencoder's reconstruction error, cross-checked by an
