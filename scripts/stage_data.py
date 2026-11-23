@@ -1,11 +1,3 @@
-"""Stage the kagglehub-downloaded SMAP/MSL dataset into the repo's gitignored data/raw/.
-
-Copies (not symlinks -- for Windows/Docker-mount portability) only what AstroSentinel
-needs: labeled_anomalies.csv plus train/test .npy files for the curated channel subset.
-This keeps data/raw/ small and avoids hardcoding an absolute host path anywhere that
-docker-compose.yml or other collaborators would depend on.
-"""
-
 import shutil
 import sys
 from pathlib import Path
