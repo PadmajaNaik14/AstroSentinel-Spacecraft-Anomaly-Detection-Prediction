@@ -1,9 +1,3 @@
-"""Download the NASA SMAP/MSL anomaly detection dataset via kagglehub.
-
-Idempotent: kagglehub returns the existing local cache path if already downloaded.
-Run this before scripts/stage_data.py.
-"""
-
 import kagglehub
 
 
